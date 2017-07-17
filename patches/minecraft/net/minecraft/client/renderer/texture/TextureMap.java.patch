@@ -1,0 +1,75 @@
+--- ../src-base/minecraft/net/minecraft/client/renderer/texture/TextureMap.java
++++ ../src-work/minecraft/net/minecraft/client/renderer/texture/TextureMap.java
+@@ -91,6 +91,7 @@
+         this.field_94258_i.clear();
+         int j = Integer.MAX_VALUE;
+         int k = 1 << this.field_147636_j;
++        net.minecraftforge.client.ForgeHooksClient.onTextureStitchedPre(this);
+         Iterator iterator = this.field_110574_e.entrySet().iterator();
+ 
+         while (iterator.hasNext())
+@@ -100,6 +101,16 @@
+             ResourceLocation resourcelocation = new ResourceLocation(textureatlassprite.func_94215_i());
+             ResourceLocation resourcelocation1 = this.func_147634_a(resourcelocation, 0);
+ 
++            if (textureatlassprite.hasCustomLoader(p_110571_1_, resourcelocation))
++            {
++                if (!textureatlassprite.load(p_110571_1_, resourcelocation))
++                {
++                    j = Math.min(j, Math.min(textureatlassprite.func_94211_a(), textureatlassprite.func_94216_b()));
++                    stitcher.func_110934_a(textureatlassprite);
++                }
++                continue;
++            }
++
+             try
+             {
+                 IResource iresource = p_110571_1_.func_110536_a(resourcelocation1);
+@@ -275,6 +286,9 @@
+             textureatlassprite2.func_94217_a(this.field_94249_f);
+         }
+ 
++        net.minecraftforge.client.ForgeHooksClient.onTextureStitchedPost(this);
++
++        if (!net.minecraftforge.common.ForgeModContainer.disableStitchedFileSaving)
+         TextureUtil.func_177055_a(this.field_94254_c.replaceAll("/", "_"), this.func_110552_b(), this.field_147636_j, stitcher.func_110935_a(), stitcher.func_110936_b());
+     }
+ 
+@@ -341,4 +355,37 @@
+     {
+         return this.field_94249_f;
+     }
++
++    //===================================================================================================
++    //                                           Forge Start
++    //===================================================================================================
++    /**
++     * Grabs the registered entry for the specified name, returning null if there was not a entry.
++     * Opposed to registerIcon, this will not instantiate the entry, useful to test if a mapping exists.
++     *
++     * @param name The name of the entry to find
++     * @return The registered entry, null if nothing was registered.
++     */
++    public TextureAtlasSprite getTextureExtry(String name)
++    {
++        return (TextureAtlasSprite)field_110574_e.get(name);
++    }
++
++    /**
++     * Adds a texture registry entry to this map for the specified name if one does not already exist.
++     * Returns false if the map already contains a entry for the specified name.
++     *
++     * @param name Entry name
++     * @param entry Entry instance
++     * @return True if the entry was added to the map, false otherwise.
++     */
++    public boolean setTextureEntry(String name, TextureAtlasSprite entry)
++    {
++        if (!field_110574_e.containsKey(name))
++        {
++            field_110574_e.put(name, entry);
++            return true;
++        }
++        return false;
++    }
+ }

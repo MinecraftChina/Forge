@@ -1,0 +1,104 @@
+--- ../src-base/minecraft/net/minecraft/item/ItemStack.java
++++ ../src-work/minecraft/net/minecraft/item/ItemStack.java
+@@ -129,6 +129,7 @@
+ 
+     public boolean func_179546_a(EntityPlayer p_179546_1_, World p_179546_2_, BlockPos p_179546_3_, EnumFacing p_179546_4_, float p_179546_5_, float p_179546_6_, float p_179546_7_)
+     {
++        if (!p_179546_2_.field_72995_K) return net.minecraftforge.common.ForgeHooks.onPlaceItemIntoWorld(this, p_179546_1_, p_179546_2_, p_179546_3_, p_179546_4_, p_179546_5_, p_179546_6_, p_179546_7_);
+         boolean flag = this.func_77973_b().func_180614_a(this, p_179546_1_, p_179546_2_, p_179546_3_, p_179546_4_, p_179546_5_, p_179546_6_, p_179546_7_);
+ 
+         if (flag)
+@@ -201,7 +202,7 @@
+ 
+     public int func_77976_d()
+     {
+-        return this.func_77973_b().func_77639_j();
++        return this.func_77973_b().getItemStackLimit(this);
+     }
+ 
+     public boolean func_77985_e()
+@@ -211,7 +212,7 @@
+ 
+     public boolean func_77984_f()
+     {
+-        return this.field_151002_e == null ? false : (this.field_151002_e.func_77612_l() <= 0 ? false : !this.func_77942_o() || !this.func_77978_p().func_74767_n("Unbreakable"));
++        return this.field_151002_e == null ? false : (this.field_151002_e.getMaxDamage(this) <= 0 ? false : !this.func_77942_o() || !this.func_77978_p().func_74767_n("Unbreakable"));
+     }
+ 
+     public boolean func_77981_g()
+@@ -221,32 +222,27 @@
+ 
+     public boolean func_77951_h()
+     {
+-        return this.func_77984_f() && this.field_77991_e > 0;
++        return this.func_77984_f() && func_77973_b().isDamaged(this);
+     }
+ 
+     public int func_77952_i()
+     {
+-        return this.field_77991_e;
++        return func_77973_b().getDamage(this);
+     }
+ 
+     public int func_77960_j()
+     {
+-        return this.field_77991_e;
++        return func_77973_b().getMetadata(this);
+     }
+ 
+     public void func_77964_b(int p_77964_1_)
+     {
+-        this.field_77991_e = p_77964_1_;
+-
+-        if (this.field_77991_e < 0)
+-        {
+-            this.field_77991_e = 0;
+-        }
++        func_77973_b().setDamage(this, p_77964_1_);
+     }
+ 
+     public int func_77958_k()
+     {
+-        return this.field_151002_e.func_77612_l();
++        return this.field_151002_e.getMaxDamage(this);
+     }
+ 
+     public boolean func_96631_a(int p_96631_1_, Random p_96631_2_)
+@@ -278,8 +274,8 @@
+                 }
+             }
+ 
+-            this.field_77991_e += p_96631_1_;
+-            return this.field_77991_e > this.func_77958_k();
++            func_77964_b(func_77952_i() + p_96631_1_); //Redirect through Item's callback if applicable.
++            return func_77952_i() > func_77958_k();
+         }
+     }
+ 
+@@ -338,7 +334,7 @@
+ 
+     public boolean func_150998_b(Block p_150998_1_)
+     {
+-        return this.field_151002_e.func_150897_b(p_150998_1_);
++        return func_77973_b().canHarvestBlock(p_150998_1_, this);
+     }
+ 
+     public boolean func_111282_a(EntityPlayer p_111282_1_, EntityLivingBase p_111282_2_)
+@@ -753,6 +749,8 @@
+             }
+         }
+ 
++        net.minecraftforge.event.ForgeEventFactory.onItemTooltip(this, p_82840_1_, arraylist, p_82840_2_);
++
+         return arraylist;
+     }
+ 
+@@ -863,7 +861,7 @@
+         }
+         else
+         {
+-            object = this.func_77973_b().func_111205_h();
++            object = this.func_77973_b().getAttributeModifiers(this);
+         }
+ 
+         return (Multimap)object;

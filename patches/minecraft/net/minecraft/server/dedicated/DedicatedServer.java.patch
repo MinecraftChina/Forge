@@ -1,0 +1,49 @@
+--- ../src-base/minecraft/net/minecraft/server/dedicated/DedicatedServer.java
++++ ../src-work/minecraft/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -1,6 +1,9 @@
+ package net.minecraft.server.dedicated;
+ 
+ import com.google.common.collect.Lists;
++import java.io.FileDescriptor;
++import java.io.FileOutputStream;
++import java.io.PrintStream;
+ import java.io.BufferedReader;
+ import java.io.File;
+ import java.io.IOException;
+@@ -25,6 +28,7 @@
+ import net.minecraft.server.gui.MinecraftServerGui;
+ import net.minecraft.server.management.PreYggdrasilConverter;
+ import net.minecraft.server.management.ServerConfigurationManager;
++import net.minecraft.util.IChatComponent;
+ import net.minecraft.util.BlockPos;
+ import net.minecraft.util.CryptManager;
+ import net.minecraft.util.MathHelper;
+@@ -52,6 +56,8 @@
+     public static boolean allowPlayerLogins = false;
+     private static final String __OBFID = "CL_00001784";
+ 
++	private PrintStream stderr = new PrintStream(new FileOutputStream(FileDescriptor.err));
++
+     public DedicatedServer(File p_i1508_1_)
+     {
+         super(p_i1508_1_, Proxy.NO_PROXY, field_152367_a);
+@@ -396,11 +402,19 @@
+     {
+         while (!this.field_71341_l.isEmpty())
+         {
++			stderr.println("+^");
+             ServerCommand servercommand = (ServerCommand)this.field_71341_l.remove(0);
+             this.func_71187_D().func_71556_a(servercommand.field_73701_b, servercommand.field_73702_a);
++			stderr.println("+$");
+         }
+     }
+ 
++    public void func_145747_a(IChatComponent message)
++    {
++        field_155771_h.info(message.func_150260_c());
++        stderr.println(message.func_150260_c());
++    }
++
+     public boolean func_71262_S()
+     {
+         return true;
