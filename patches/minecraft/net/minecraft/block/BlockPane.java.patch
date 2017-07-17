@@ -1,0 +1,27 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockPane.java
++++ ../src-work/minecraft/net/minecraft/block/BlockPane.java
+@@ -197,6 +197,24 @@
+         return new BlockStateContainer(this, new IProperty[] {field_176241_b, field_176242_M, field_176244_O, field_176243_N});
+     }
+ 
++    /* ======================================== FORGE START ======================================== */
++
++    @Override
++    public boolean canBeConnectedTo(IBlockAccess world, BlockPos pos, EnumFacing facing)
++    {
++        Block connector = world.func_180495_p(pos.func_177972_a(facing)).func_177230_c();
++        return connector instanceof BlockPane;
++    }
++
++    public boolean canPaneConnectTo(IBlockAccess world, BlockPos pos, EnumFacing dir)
++    {
++        BlockPos other = pos.func_177972_a(dir);
++        IBlockState state = world.func_180495_p(other);
++        return state.func_177230_c().canBeConnectedTo(world, other, dir.func_176734_d()) || func_193393_b(world, state, other, dir.func_176734_d());
++    }
++
++    /* ======================================== FORGE END ======================================== */
++
+     public BlockFaceShape func_193383_a(IBlockAccess p_193383_1_, IBlockState p_193383_2_, BlockPos p_193383_3_, EnumFacing p_193383_4_)
+     {
+         return p_193383_4_ != EnumFacing.UP && p_193383_4_ != EnumFacing.DOWN ? BlockFaceShape.MIDDLE_POLE_THIN : BlockFaceShape.CENTER_SMALL;
