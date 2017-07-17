@@ -1,0 +1,27 @@
+--- ../src-base/minecraft/net/minecraft/entity/player/InventoryPlayer.java
++++ ../src-work/minecraft/net/minecraft/entity/player/InventoryPlayer.java
+@@ -275,7 +275,8 @@
+ 
+             if (itemstack.func_190926_b())
+             {
+-                itemstack = new ItemStack(item, 0, p_70452_1_.func_77960_j());
++                itemstack = p_70452_1_.func_77946_l(); // Forge: Replace Item clone above to preserve item capabilities when picking the item up.
++                itemstack.func_190920_e(0);
+ 
+                 if (p_70452_1_.func_77942_o())
+                 {
+@@ -347,6 +348,14 @@
+                 }
+             }
+         }
++
++        for (ItemStack is : field_70460_b) // FORGE: Tick armor on animation ticks
++        {
++            if (!is.func_190926_b())
++            {
++                is.func_77973_b().onArmorTick(field_70458_d.field_70170_p, field_70458_d, is);
++            }
++        }
+     }
+ 
+     public boolean func_70441_a(final ItemStack p_70441_1_)
