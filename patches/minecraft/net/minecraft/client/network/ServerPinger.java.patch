@@ -1,0 +1,36 @@
+--- ../src-base/minecraft/net/minecraft/client/network/ServerPinger.java
++++ ../src-work/minecraft/net/minecraft/client/network/ServerPinger.java
+@@ -26,6 +26,7 @@
+ import net.minecraft.client.Minecraft;
+ import net.minecraft.client.multiplayer.ServerAddress;
+ import net.minecraft.client.multiplayer.ServerData;
++import net.minecraft.client.resources.I18n;
+ import net.minecraft.network.EnumConnectionState;
+ import net.minecraft.network.NetworkManager;
+ import net.minecraft.network.ServerStatusResponse;
+@@ -150,6 +151,7 @@
+                         p_147224_1_.func_147407_a((String)null);
+                     }
+ 
++                    net.minecraftforge.fml.client.FMLClientHandler.instance().bindServerListData(p_147224_1_, serverstatusresponse);
+                     this.field_175092_e = Minecraft.func_71386_F();
+                     networkmanager.func_179290_a(new CPacketPing(this.field_175092_e));
+                     this.field_147403_d = true;
+@@ -167,7 +169,7 @@
+                 if (!this.field_147403_d)
+                 {
+                     ServerPinger.field_147228_b.error("Can\'t ping {}: {}", new Object[] {p_147224_1_.field_78845_b, p_147231_1_.func_150260_c()});
+-                    p_147224_1_.field_78843_d = TextFormatting.DARK_RED + "Can\'t connect to server.";
++                    p_147224_1_.field_78843_d = TextFormatting.DARK_RED + I18n.func_135052_a("mc.chinaversion.cannot_connect_server", new Object[0]);
+                     p_147224_1_.field_78846_c = "";
+                     ServerPinger.this.func_147225_b(p_147224_1_);
+                 }
+@@ -176,7 +178,7 @@
+ 
+         try
+         {
+-            networkmanager.func_179290_a(new C00Handshake(210, serveraddress.func_78861_a(), serveraddress.func_78864_b(), EnumConnectionState.STATUS));
++            networkmanager.func_179290_a(new C00Handshake(210, serveraddress.func_78861_a(), serveraddress.func_78864_b(), EnumConnectionState.STATUS, true));
+             networkmanager.func_179290_a(new CPacketServerQuery());
+         }
+         catch (Throwable throwable)

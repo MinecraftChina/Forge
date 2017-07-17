@@ -1,0 +1,150 @@
+--- ../src-base/minecraft/net/minecraft/client/settings/GameSettings.java
++++ ../src-work/minecraft/net/minecraft/client/settings/GameSettings.java
+@@ -156,6 +156,7 @@
+ 
+     public GameSettings(Minecraft p_i46326_1_, File p_i46326_2_)
+     {
++        setForgeKeybindProperties();
+         this.field_74324_K = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.field_74312_F, this.field_74313_G, this.field_74351_w, this.field_74370_x, this.field_74368_y, this.field_74366_z, this.field_74314_A, this.field_74311_E, this.field_151444_V, this.field_74316_C, this.field_151445_Q, this.field_74310_D, this.field_74321_H, this.field_74322_I, this.field_74323_J, this.field_151447_Z, this.field_151457_aa, this.field_151458_ab, this.field_152395_am, this.field_178883_an, this.field_186718_X}, this.field_151456_ac);
+         this.field_74318_M = EnumDifficulty.NORMAL;
+         this.field_74332_R = "";
+@@ -179,6 +180,7 @@
+ 
+     public GameSettings()
+     {
++        setForgeKeybindProperties();
+         this.field_74324_K = (KeyBinding[])ArrayUtils.addAll(new KeyBinding[] {this.field_74312_F, this.field_74313_G, this.field_74351_w, this.field_74370_x, this.field_74368_y, this.field_74366_z, this.field_74314_A, this.field_74311_E, this.field_151444_V, this.field_74316_C, this.field_151445_Q, this.field_74310_D, this.field_74321_H, this.field_74322_I, this.field_74323_J, this.field_151447_Z, this.field_151457_aa, this.field_151458_ab, this.field_152395_am, this.field_178883_an, this.field_186718_X}, this.field_151456_ac);
+         this.field_74318_M = EnumDifficulty.NORMAL;
+         this.field_74332_R = "";
+@@ -188,9 +190,44 @@
+ 
+     public static String func_74298_c(int p_74298_0_)
+     {
+-        return p_74298_0_ < 0 ? I18n.func_135052_a("key.mouseButton", new Object[] {Integer.valueOf(p_74298_0_ + 101)}): (p_74298_0_ < 256 ? Keyboard.getKeyName(p_74298_0_) : String.format("%c", new Object[] {Character.valueOf((char)(p_74298_0_ - 256))}).toUpperCase());
++        String keyDisplayString = p_74298_0_ < 0 ? I18n.func_135052_a("key.mouseButton", new Object[] {Integer.valueOf(p_74298_0_ + 101)}): (p_74298_0_ < 256 ? Keyboard.getKeyName(p_74298_0_) : String.format("%c", new Object[] {Character.valueOf((char)(p_74298_0_ - 256))}).toUpperCase());
++       
++        if(keyDisplayString.equals("SLASH")) {
++            return "/";
++        }
++        else if(keyDisplayString.equals("NONE")) {
++            return I18n.func_135052_a("mc.chinaversion.none", new Object[0]);
++        }
++        else if(keyDisplayString.equals("LCONTROL")) {
++            return I18n.func_135052_a("mc.chinaversion.lctrl", new Object[0]);
++        }
++        else if(keyDisplayString.equals("RCONTROL")) {
++            return I18n.func_135052_a("mc.chinaversion.rctrl", new Object[0]);
++        }
++        else if(keyDisplayString.equals("LSHIFT")) {
++            return I18n.func_135052_a("mc.chinaversion.lshift", new Object[0]);
++        }
++        else if(keyDisplayString.equals("RSHIFT")) {
++            return I18n.func_135052_a("mc.chinaversion.rshift", new Object[0]);
++        }
++        else if(keyDisplayString.equals("LMENU")) {
++            return I18n.func_135052_a("mc.chinaversion.lalt", new Object[0]);
++        }
++        else if(keyDisplayString.equals("RMENU")) {
++            return I18n.func_135052_a("mc.chinaversion.ralt", new Object[0]);
++        }
++        else if(keyDisplayString.equals("RETURN")) {
++            return I18n.func_135052_a("mc.chinaversion.return", new Object[0]);
++        }
++        else if(keyDisplayString.equals("SPACE")) {
++            return I18n.func_135052_a("mc.chinaversion.space", new Object[0]);
++        }
++        
++       
++        return keyDisplayString;
+     }
+ 
++
+     public static boolean func_100015_a(KeyBinding p_100015_0_)
+     {
+         int i = p_100015_0_.func_151463_i();
+@@ -265,7 +302,7 @@
+                 this.field_74317_L.func_147117_R().func_147633_a(this.field_151442_I);
+                 this.field_74317_L.func_110434_K().func_110577_a(TextureMap.field_110575_b);
+                 this.field_74317_L.func_147117_R().func_174937_a(false, this.field_151442_I > 0);
+-                this.field_74317_L.func_175603_A();
++                this.needsResourceRefresh = true; // FORGE: fix for MC-64581 very laggy mipmap slider
+             }
+         }
+ 
+@@ -497,7 +534,7 @@
+         {
+             float f1 = this.func_74296_a(p_74297_1_);
+             float f = p_74297_1_.func_148266_c(f1);
+-            return p_74297_1_ == GameSettings.Options.SENSITIVITY ? (f == 0.0F ? s + I18n.func_135052_a("options.sensitivity.min", new Object[0]) : (f == 1.0F ? s + I18n.func_135052_a("options.sensitivity.max", new Object[0]) : s + (int)(f * 200.0F) + "%")) : (p_74297_1_ == GameSettings.Options.FOV ? (f1 == 70.0F ? s + I18n.func_135052_a("options.fov.min", new Object[0]) : (f1 == 110.0F ? s + I18n.func_135052_a("options.fov.max", new Object[0]) : s + (int)f1)) : (p_74297_1_ == GameSettings.Options.FRAMERATE_LIMIT ? (f1 == p_74297_1_.field_148272_O ? s + I18n.func_135052_a("options.framerateLimit.max", new Object[0]) : s + (int)f1 + " fps") : (p_74297_1_ == GameSettings.Options.RENDER_CLOUDS ? (f1 == p_74297_1_.field_148271_N ? s + I18n.func_135052_a("options.cloudHeight.min", new Object[0]) : s + ((int)f1 + 128)) : (p_74297_1_ == GameSettings.Options.GAMMA ? (f == 0.0F ? s + I18n.func_135052_a("options.gamma.min", new Object[0]) : (f == 1.0F ? s + I18n.func_135052_a("options.gamma.max", new Object[0]) : s + "+" + (int)(f * 100.0F) + "%")) : (p_74297_1_ == GameSettings.Options.SATURATION ? s + (int)(f * 400.0F) + "%" : (p_74297_1_ == GameSettings.Options.CHAT_OPACITY ? s + (int)(f * 90.0F + 10.0F) + "%" : (p_74297_1_ == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED ? s + GuiNewChat.func_146243_b(f) + "px" : (p_74297_1_ == GameSettings.Options.CHAT_HEIGHT_FOCUSED ? s + GuiNewChat.func_146243_b(f) + "px" : (p_74297_1_ == GameSettings.Options.CHAT_WIDTH ? s + GuiNewChat.func_146233_a(f) + "px" : (p_74297_1_ == GameSettings.Options.RENDER_DISTANCE ? s + (int)f1 + " chunks" : (p_74297_1_ == GameSettings.Options.MIPMAP_LEVELS ? (f1 == 0.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)f1) : (f == 0.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)(f * 100.0F) + "%"))))))))))));
++            return p_74297_1_ == GameSettings.Options.SENSITIVITY ? (f == 0.0F ? s + I18n.func_135052_a("options.sensitivity.min", new Object[0]) : (f == 1.0F ? s + I18n.func_135052_a("options.sensitivity.max", new Object[0]) : s + (int)(f * 200.0F) + "%")) : (p_74297_1_ == GameSettings.Options.FOV ? (f1 == 70.0F ? s + I18n.func_135052_a("options.fov.min", new Object[0]) : (f1 == 110.0F ? s + I18n.func_135052_a("options.fov.max", new Object[0]) : s + (int)f1)) : (p_74297_1_ == GameSettings.Options.FRAMERATE_LIMIT ? (f1 == p_74297_1_.field_148272_O ? s + I18n.func_135052_a("options.framerateLimit.max", new Object[0]) : s + (int)f1 + " " + I18n.func_135052_a("mc.chinaversion.fps", new Object[0])) : (p_74297_1_ == GameSettings.Options.RENDER_CLOUDS ? (f1 == p_74297_1_.field_148271_N ? s + I18n.func_135052_a("options.cloudHeight.min", new Object[0]) : s + ((int)f1 + 128)) : (p_74297_1_ == GameSettings.Options.GAMMA ? (f == 0.0F ? s + I18n.func_135052_a("options.gamma.min", new Object[0]) : (f == 1.0F ? s + I18n.func_135052_a("options.gamma.max", new Object[0]) : s + "+" + (int)(f * 100.0F) + "%")) : (p_74297_1_ == GameSettings.Options.SATURATION ? s + (int)(f * 400.0F) + "%" : (p_74297_1_ == GameSettings.Options.CHAT_OPACITY ? s + (int)(f * 90.0F + 10.0F) + "%" : (p_74297_1_ == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED ? s + GuiNewChat.func_146243_b(f) + I18n.func_135052_a("mc.chinaversion.px", new Object[0]) : (p_74297_1_ == GameSettings.Options.CHAT_HEIGHT_FOCUSED ? s + GuiNewChat.func_146243_b(f) + I18n.func_135052_a("mc.chinaversion.px", new Object[0]) : (p_74297_1_ == GameSettings.Options.CHAT_WIDTH ? s + GuiNewChat.func_146233_a(f) + I18n.func_135052_a("mc.chinaversion.px", new Object[0]) : (p_74297_1_ == GameSettings.Options.RENDER_DISTANCE ? s + (int)f1 + " " + I18n.func_135052_a("mc.chinaversion.chunks", new Object[0]) : (p_74297_1_ == GameSettings.Options.MIPMAP_LEVELS ? (f1 == 0.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)f1) : (f == 0.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)(f * 100.0F) + "%"))))))))))));
+         }
+         else if (p_74297_1_.func_74382_b())
+         {
+@@ -887,7 +924,12 @@
+                     {
+                         if (s1.equals("key_" + keybinding.func_151464_g()))
+                         {
+-                            keybinding.func_151462_b(Integer.parseInt(s2));
++                            if (s2.indexOf(':') != -1)
++                            {
++                                String[] t = s2.split(":");
++                                keybinding.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.valueFromString(t[1]), Integer.parseInt(t[0]));
++                            } else
++                            keybinding.setKeyModifierAndCode(net.minecraftforge.client.settings.KeyModifier.NONE, Integer.parseInt(s2));
+                         }
+                     }
+ 
+@@ -944,6 +986,7 @@
+ 
+     public void func_74303_b()
+     {
++        if (net.minecraftforge.fml.client.FMLClientHandler.instance().isLoading()) return;
+         PrintWriter printwriter = null;
+ 
+         try
+@@ -1017,7 +1060,8 @@
+ 
+             for (KeyBinding keybinding : this.field_74324_K)
+             {
+-                printwriter.println("key_" + keybinding.func_151464_g() + ":" + keybinding.func_151463_i());
++                String keyString = "key_" + keybinding.func_151464_g() + ":" + keybinding.func_151463_i();
++                printwriter.println(keybinding.getKeyModifier() != net.minecraftforge.client.settings.KeyModifier.NONE ? keyString + ":" + keybinding.getKeyModifier() : keyString);
+             }
+ 
+             for (SoundCategory soundcategory : SoundCategory.values())
+@@ -1250,4 +1294,35 @@
+             return p_148264_1_;
+         }
+     }
++
++    /******* Forge Start ***********/
++    private void setForgeKeybindProperties() {
++        net.minecraftforge.client.settings.KeyConflictContext inGame = net.minecraftforge.client.settings.KeyConflictContext.IN_GAME;
++        field_74351_w.setKeyConflictContext(inGame);
++        field_74370_x.setKeyConflictContext(inGame);
++        field_74368_y.setKeyConflictContext(inGame);
++        field_74366_z.setKeyConflictContext(inGame);
++        field_74314_A.setKeyConflictContext(inGame);
++        field_74311_E.setKeyConflictContext(inGame);
++        field_151444_V.setKeyConflictContext(inGame);
++        field_74312_F.setKeyConflictContext(inGame);
++        field_74310_D.setKeyConflictContext(inGame);
++        field_74321_H.setKeyConflictContext(inGame);
++        field_74323_J.setKeyConflictContext(inGame);
++        field_151457_aa.setKeyConflictContext(inGame);
++        field_151458_ab.setKeyConflictContext(inGame);
++        field_186718_X.setKeyConflictContext(inGame);
++    }
++
++    // FORGE: fix for MC-64581 very laggy mipmap slider
++    private boolean needsResourceRefresh = false;
++    public void onGuiClosed()
++    {
++        if (needsResourceRefresh)
++        {
++            this.field_74317_L.func_175603_A();
++            this.needsResourceRefresh = false;
++        }
++    }
++    /******* Forge End ***********/
+ }

@@ -1,0 +1,11 @@
+--- ../src-base/minecraft/net/minecraft/client/resources/ResourcePackListEntryDefault.java
++++ ../src-work/minecraft/net/minecraft/client/resources/ResourcePackListEntryDefault.java
+@@ -15,7 +15,7 @@
+ 
+     protected String func_148312_b()
+     {
+-        return "Default";
++    	return I18n.func_135052_a("mc.chinaversion.resourcedefalutname", new Object[0]);
+     }
+ 
+     public boolean func_186768_j()
