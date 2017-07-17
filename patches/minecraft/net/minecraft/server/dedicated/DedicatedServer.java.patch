@@ -1,0 +1,99 @@
+--- ../src-base/minecraft/net/minecraft/server/dedicated/DedicatedServer.java
++++ ../src-work/minecraft/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -4,6 +4,9 @@
+ import com.mojang.authlib.GameProfileRepository;
+ import com.mojang.authlib.minecraft.MinecraftSessionService;
+ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
++import java.io.FileDescriptor;
++import java.io.FileOutputStream;
++import java.io.PrintStream;
+ import java.io.BufferedReader;
+ import java.io.File;
+ import java.io.IOException;
+@@ -55,7 +58,10 @@
+     private boolean field_71338_p;
+     private WorldSettings.GameType field_71337_q;
+     private boolean field_71335_s;
++    public static boolean allowPlayerLogins = false;
+ 
++    private PrintStream stderr = new PrintStream(new FileOutputStream(FileDescriptor.err));
++
+     public DedicatedServer(File p_i47086_1_, DataFixer p_i47086_2_, YggdrasilAuthenticationService p_i47086_3_, MinecraftSessionService p_i47086_4_, GameProfileRepository p_i47086_5_, PlayerProfileCache p_i47086_6_)
+     {
+         super(p_i47086_1_, Proxy.NO_PROXY, p_i47086_2_, p_i47086_3_, p_i47086_4_, p_i47086_5_, p_i47086_6_);
+@@ -88,6 +94,7 @@
+         {
+             public void run()
+             {
++                if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
+                 BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in));
+                 String s4;
+ 
+@@ -113,6 +120,8 @@
+             field_155771_h.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+         }
+ 
++        net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStart(this);
++
+         field_155771_h.info("Loading properties");
+         this.field_71340_o = new PropertyManager(new File("server.properties"));
+         this.field_154332_n = new ServerEula(new File("eula.txt"));
+@@ -204,6 +213,7 @@
+             }
+             else
+             {
++                net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStarted();
+                 this.func_184105_a(new DedicatedPlayerList(this));
+                 long j = System.nanoTime();
+ 
+@@ -253,6 +263,7 @@
+                 TileEntitySkull.func_184293_a(this.func_152358_ax());
+                 TileEntitySkull.func_184294_a(this.func_147130_as());
+                 PlayerProfileCache.func_187320_a(this.func_71266_T());
++                if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerAboutToStart(this)) return false;
+                 field_155771_h.info("Preparing level \"" + this.func_71270_I() + "\"");
+                 this.func_71247_a(this.func_71270_I(), this.func_71270_I(), k, worldtype, s2);
+                 long i1 = System.nanoTime() - j;
+@@ -281,7 +292,7 @@
+                     thread1.start();
+                 }
+ 
+-                return true;
++                return net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStarting(this);
+             }
+         }
+     }
+@@ -411,8 +422,10 @@
+     {
+         while (!this.field_71341_l.isEmpty())
+         {
++            stderr.println("+^");
+             PendingCommand pendingcommand = (PendingCommand)this.field_71341_l.remove(0);
+             this.func_71187_D().func_71556_a(pendingcommand.field_73701_b, pendingcommand.field_73702_a);
++            stderr.println("+$");
+         }
+     }
+ 
+@@ -505,7 +518,7 @@
+ 
+     public boolean func_175579_a(World p_175579_1_, BlockPos p_175579_2_, EntityPlayer p_175579_3_)
+     {
+-        if (p_175579_1_.field_73011_w.func_186058_p().func_186068_a() != 0)
++        if (p_175579_1_.field_73011_w.getDimension() != 0)
+         {
+             return false;
+         }
+@@ -579,6 +592,13 @@
+         return this.field_71340_o.func_73669_a("network-compression-threshold", super.func_175577_aI());
+     }
+ 
++    //Forge: Enable formated text for colors in console.
++    @Override
++    public void func_145747_a(net.minecraft.util.text.ITextComponent message) {
++        field_155771_h.info(message.func_150254_d());
++        stderr.println(message.func_150260_c());
++    }
++
+     protected boolean func_152368_aE() throws IOException
+     {
+         boolean flag = false;

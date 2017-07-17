@@ -1,0 +1,62 @@
+--- ../src-base/minecraft/net/minecraft/item/ItemBlock.java
++++ ../src-work/minecraft/net/minecraft/item/ItemBlock.java
+@@ -51,16 +51,8 @@
+             int i = this.func_77647_b(p_180614_1_.func_77960_j());
+             IBlockState iblockstate1 = this.field_150939_a.func_180642_a(p_180614_3_, p_180614_4_, p_180614_6_, p_180614_7_, p_180614_8_, p_180614_9_, i, p_180614_2_);
+ 
+-            if (p_180614_3_.func_180501_a(p_180614_4_, iblockstate1, 11))
++            if (placeBlockAt(p_180614_1_, p_180614_2_, p_180614_3_, p_180614_4_, p_180614_6_, p_180614_7_, p_180614_8_, p_180614_9_, iblockstate1))
+             {
+-                iblockstate1 = p_180614_3_.func_180495_p(p_180614_4_);
+-
+-                if (iblockstate1.func_177230_c() == this.field_150939_a)
+-                {
+-                    func_179224_a(p_180614_3_, p_180614_2_, p_180614_4_, p_180614_1_);
+-                    this.field_150939_a.func_180633_a(p_180614_3_, p_180614_4_, iblockstate1, p_180614_2_, p_180614_1_);
+-                }
+-
+                 SoundType soundtype = this.field_150939_a.func_185467_w();
+                 p_180614_3_.func_184133_a(p_180614_2_, p_180614_4_, soundtype.func_185841_e(), SoundCategory.BLOCKS, (soundtype.func_185843_a() + 1.0F) / 2.0F, soundtype.func_185847_b() * 0.8F);
+                 --p_180614_1_.field_77994_a;
+@@ -121,7 +113,7 @@
+     {
+         Block block = p_179222_1_.func_180495_p(p_179222_2_).func_177230_c();
+ 
+-        if (block == Blocks.field_150431_aC)
++        if (block == Blocks.field_150431_aC && block.func_176200_f(p_179222_1_, p_179222_2_))
+         {
+             p_179222_3_ = EnumFacing.UP;
+         }
+@@ -159,4 +151,32 @@
+     {
+         return this.field_150939_a;
+     }
++
++    /**
++     * Called to actually place the block, after the location is determined
++     * and all permission checks have been made.
++     *
++     * @param stack The item stack that was used to place the block. This can be changed inside the method.
++     * @param player The player who is placing the block. Can be null if the block is not being placed by a player.
++     * @param side The side the player (or machine) right-clicked on.
++     */
++    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, IBlockState newState)
++    {
++        if (!world.func_180501_a(pos, newState, 3)) return false;
++
++        IBlockState state = world.func_180495_p(pos);
++        if (state.func_177230_c() == this.field_150939_a)
++        {
++            func_179224_a(world, player, pos, stack);
++            this.field_150939_a.func_180633_a(world, pos, state, player, stack);
++        }
++
++        return true;
++    }
++
++    @SideOnly(Side.CLIENT)
++    public void func_77624_a(ItemStack stack, EntityPlayer playerIn, List<String> tooltip, boolean advanced)
++    {
++        field_150939_a.addInformation(stack, playerIn, tooltip, advanced);
++    }
+ }
