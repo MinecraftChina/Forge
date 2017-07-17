@@ -1,0 +1,25 @@
+--- ../src-base/minecraft/net/minecraft/client/gui/ServerListEntryNormal.java
++++ ../src-work/minecraft/net/minecraft/client/gui/ServerListEntryNormal.java
+@@ -19,6 +19,7 @@
+ import net.minecraft.client.multiplayer.ServerData;
+ import net.minecraft.client.renderer.Tessellator;
+ import net.minecraft.client.renderer.texture.DynamicTexture;
++import net.minecraft.client.resources.I18n;
+ import net.minecraft.util.EnumChatFormatting;
+ import net.minecraft.util.ResourceLocation;
+ import org.apache.commons.lang3.Validate;
+@@ -69,12 +70,12 @@
+                     catch (UnknownHostException unknownhostexception)
+                     {
+                         ServerListEntryNormal.this.field_148301_e.field_78844_e = -1L;
+-                        ServerListEntryNormal.this.field_148301_e.field_78843_d = EnumChatFormatting.DARK_RED + "Can\'t resolve hostname";
++                        ServerListEntryNormal.this.field_148301_e.field_78843_d = EnumChatFormatting.DARK_RED + I18n.func_135052_a("mc.chinaversion.cannot_resolve_hostname", new Object[0]);
+                     }
+                     catch (Exception exception)
+                     {
+                         ServerListEntryNormal.this.field_148301_e.field_78844_e = -1L;
+-                        ServerListEntryNormal.this.field_148301_e.field_78843_d = EnumChatFormatting.DARK_RED + "Can\'t connect to server.";
++                        ServerListEntryNormal.this.field_148301_e.field_78843_d = EnumChatFormatting.DARK_RED + I18n.func_135052_a("mc.chinaversion.cannot_connect_server", new Object[0]);
+                     }
+                 }
+             });

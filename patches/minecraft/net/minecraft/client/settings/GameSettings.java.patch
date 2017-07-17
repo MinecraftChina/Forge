@@ -1,0 +1,57 @@
+--- ../src-base/minecraft/net/minecraft/client/settings/GameSettings.java
++++ ../src-work/minecraft/net/minecraft/client/settings/GameSettings.java
+@@ -291,9 +291,44 @@
+ 
+     public static String func_74298_c(int p_74298_0_)
+     {
+-        return p_74298_0_ < 0 ? I18n.func_135052_a("key.mouseButton", new Object[] {Integer.valueOf(p_74298_0_ + 101)}): Keyboard.getKeyName(p_74298_0_);
++        String keyDisplayString = p_74298_0_ < 0 ? I18n.func_135052_a("key.mouseButton", new Object[] {Integer.valueOf(p_74298_0_ + 101)}): (p_74298_0_ < 256 ? Keyboard.getKeyName(p_74298_0_) : String.format("%c", new Object[] {Character.valueOf((char)(p_74298_0_ - 256))}).toUpperCase());
++       
++        if(keyDisplayString.equals("SLASH")) {
++            return "/";
++        }
++        else if(keyDisplayString.equals("NONE")) {
++            return I18n.func_135052_a("mc.chinaversion.none", new Object[0]);
++        }
++        else if(keyDisplayString.equals("LCONTROL")) {
++            return I18n.func_135052_a("mc.chinaversion.lctrl", new Object[0]);
++        }
++        else if(keyDisplayString.equals("RCONTROL")) {
++            return I18n.func_135052_a("mc.chinaversion.rctrl", new Object[0]);
++        }
++        else if(keyDisplayString.equals("LSHIFT")) {
++            return I18n.func_135052_a("mc.chinaversion.lshift", new Object[0]);
++        }
++        else if(keyDisplayString.equals("RSHIFT")) {
++            return I18n.func_135052_a("mc.chinaversion.rshift", new Object[0]);
++        }
++        else if(keyDisplayString.equals("LMENU")) {
++            return I18n.func_135052_a("mc.chinaversion.lalt", new Object[0]);
++        }
++        else if(keyDisplayString.equals("RMENU")) {
++            return I18n.func_135052_a("mc.chinaversion.ralt", new Object[0]);
++        }
++        else if(keyDisplayString.equals("RETURN")) {
++            return I18n.func_135052_a("mc.chinaversion.return", new Object[0]);
++        }
++        else if(keyDisplayString.equals("SPACE")) {
++            return I18n.func_135052_a("mc.chinaversion.space", new Object[0]);
++        }
++
++       
++        return keyDisplayString;
+     }
+ 
++
+     public static boolean func_100015_a(KeyBinding p_100015_0_)
+     {
+         return p_100015_0_.func_151463_i() == 0 ? false : (p_100015_0_.func_151463_i() < 0 ? Mouse.isButtonDown(p_100015_0_.func_151463_i() + 100) : Keyboard.isKeyDown(p_100015_0_.func_151463_i()));
+@@ -626,7 +661,7 @@
+         {
+             float f1 = this.func_74296_a(p_74297_1_);
+             float f = p_74297_1_.func_148266_c(f1);
+-            return p_74297_1_ == GameSettings.Options.SENSITIVITY ? (f == 0.0F ? s + I18n.func_135052_a("options.sensitivity.min", new Object[0]) : (f == 1.0F ? s + I18n.func_135052_a("options.sensitivity.max", new Object[0]) : s + (int)(f * 200.0F) + "%")) : (p_74297_1_ == GameSettings.Options.FOV ? (f1 == 70.0F ? s + I18n.func_135052_a("options.fov.min", new Object[0]) : (f1 == 110.0F ? s + I18n.func_135052_a("options.fov.max", new Object[0]) : s + (int)f1)) : (p_74297_1_ == GameSettings.Options.FRAMERATE_LIMIT ? (f1 == p_74297_1_.field_148272_O ? s + I18n.func_135052_a("options.framerateLimit.max", new Object[0]) : s + (int)f1 + " fps") : (p_74297_1_ == GameSettings.Options.GAMMA ? (f == 0.0F ? s + I18n.func_135052_a("options.gamma.min", new Object[0]) : (f == 1.0F ? s + I18n.func_135052_a("options.gamma.max", new Object[0]) : s + "+" + (int)(f * 100.0F) + "%")) : (p_74297_1_ == GameSettings.Options.SATURATION ? s + (int)(f * 400.0F) + "%" : (p_74297_1_ == GameSettings.Options.CHAT_OPACITY ? s + (int)(f * 90.0F + 10.0F) + "%" : (p_74297_1_ == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED ? s + GuiNewChat.func_146243_b(f) + "px" : (p_74297_1_ == GameSettings.Options.CHAT_HEIGHT_FOCUSED ? s + GuiNewChat.func_146243_b(f) + "px" : (p_74297_1_ == GameSettings.Options.CHAT_WIDTH ? s + GuiNewChat.func_146233_a(f) + "px" : (p_74297_1_ == GameSettings.Options.RENDER_DISTANCE ? s + (int)f1 + " chunks" : (p_74297_1_ == GameSettings.Options.ANISOTROPIC_FILTERING ? (f1 == 1.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)f1) : (p_74297_1_ == GameSettings.Options.MIPMAP_LEVELS ? (f1 == 0.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)f1) : (p_74297_1_ == GameSettings.Options.STREAM_FPS ? s + TwitchStream.func_152948_a(f) + " fps" : (p_74297_1_ == GameSettings.Options.STREAM_KBPS ? s + TwitchStream.func_152946_b(f) + " Kbps" : (p_74297_1_ == GameSettings.Options.STREAM_BYTES_PER_PIXEL ? s + String.format("%.3f bpp", new Object[] {Float.valueOf(TwitchStream.func_152947_c(f))}): (f == 0.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)(f * 100.0F) + "%")))))))))))))));
++            return p_74297_1_ == GameSettings.Options.SENSITIVITY ? (f == 0.0F ? s + I18n.func_135052_a("options.sensitivity.min", new Object[0]) : (f == 1.0F ? s + I18n.func_135052_a("options.sensitivity.max", new Object[0]) : s + (int)(f * 200.0F) + "%")) : (p_74297_1_ == GameSettings.Options.FOV ? (f1 == 70.0F ? s + I18n.func_135052_a("options.fov.min", new Object[0]) : (f1 == 110.0F ? s + I18n.func_135052_a("options.fov.max", new Object[0]) : s + (int)f1)) : (p_74297_1_ == GameSettings.Options.FRAMERATE_LIMIT ? (f1 == p_74297_1_.field_148272_O ? s + I18n.func_135052_a("options.framerateLimit.max", new Object[0]) : s + (int)f1 + " " + I18n.func_135052_a("mc.chinaversion.fps", new Object[0])) : (p_74297_1_ == GameSettings.Options.GAMMA ? (f == 0.0F ? s + I18n.func_135052_a("options.gamma.min", new Object[0]) : (f == 1.0F ? s + I18n.func_135052_a("options.gamma.max", new Object[0]) : s + "+" + (int)(f * 100.0F) + "%")) : (p_74297_1_ == GameSettings.Options.SATURATION ? s + (int)(f * 400.0F) + "%" : (p_74297_1_ == GameSettings.Options.CHAT_OPACITY ? s + (int)(f * 90.0F + 10.0F) + "%" : (p_74297_1_ == GameSettings.Options.CHAT_HEIGHT_UNFOCUSED ? s + GuiNewChat.func_146243_b(f) + I18n.func_135052_a("mc.chinaversion.px", new Object[0]) : (p_74297_1_ == GameSettings.Options.CHAT_HEIGHT_FOCUSED ? s + GuiNewChat.func_146243_b(f) + I18n.func_135052_a("mc.chinaversion.px", new Object[0]) : (p_74297_1_ == GameSettings.Options.CHAT_WIDTH ? s + GuiNewChat.func_146233_a(f) + I18n.func_135052_a("mc.chinaversion.px", new Object[0]) : (p_74297_1_ == GameSettings.Options.RENDER_DISTANCE ? s + (int)f1 + " " + I18n.func_135052_a("mc.chinaversion.chunks", new Object[0]) : (p_74297_1_ == GameSettings.Options.ANISOTROPIC_FILTERING ? (f1 == 1.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)f1) : (p_74297_1_ == GameSettings.Options.MIPMAP_LEVELS ? (f1 == 0.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)f1) : (p_74297_1_ == GameSettings.Options.STREAM_FPS ? s + TwitchStream.func_152948_a(f) + " fps" : (p_74297_1_ == GameSettings.Options.STREAM_KBPS ? s + TwitchStream.func_152946_b(f) + " Kbps" : (p_74297_1_ == GameSettings.Options.STREAM_BYTES_PER_PIXEL ? s + String.format("%.3f bpp", new Object[] {Float.valueOf(TwitchStream.func_152947_c(f))}): (f == 0.0F ? s + I18n.func_135052_a("options.off", new Object[0]) : s + (int)(f * 100.0F) + "%")))))))))))))));
+         }
+         else if (p_74297_1_.func_74382_b())
+         {
