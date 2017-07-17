@@ -1,0 +1,99 @@
+--- ../src-base/minecraft/net/minecraft/client/gui/GuiScreen.java
++++ ../src-work/minecraft/net/minecraft/client/gui/GuiScreen.java
+@@ -143,7 +143,8 @@
+             }
+         }
+ 
+-        this.func_146283_a(list, p_146285_2_, p_146285_3_);
++        FontRenderer font = p_146285_1_.func_77973_b().getFontRenderer(p_146285_1_);
++        this.drawHoveringText(list, p_146285_2_, p_146285_3_, (font == null ? field_146289_q : font));
+     }
+ 
+     protected void func_146279_a(String p_146279_1_, int p_146279_2_, int p_146279_3_)
+@@ -153,6 +154,11 @@
+ 
+     protected void func_146283_a(List<String> p_146283_1_, int p_146283_2_, int p_146283_3_)
+     {
++        drawHoveringText(p_146283_1_, p_146283_2_, p_146283_3_, field_146289_q);   
++    }
++
++    protected void drawHoveringText(List<String> p_146283_1_, int p_146283_2_, int p_146283_3_, FontRenderer font)
++    {
+         if (!p_146283_1_.isEmpty())
+         {
+             GlStateManager.func_179101_C();
+@@ -163,7 +169,7 @@
+ 
+             for (String s : p_146283_1_)
+             {
+-                int j = this.field_146289_q.func_78256_a(s);
++                int j = font.func_78256_a(s);
+ 
+                 if (j > i)
+                 {
+@@ -208,7 +214,7 @@
+             for (int k1 = 0; k1 < p_146283_1_.size(); ++k1)
+             {
+                 String s1 = (String)p_146283_1_.get(k1);
+-                this.field_146289_q.func_175063_a(s1, (float)l1, (float)i2, -1);
++                font.func_175063_a(s1, (float)l1, (float)i2, -1);
+ 
+                 if (k1 == 0)
+                 {
+@@ -436,6 +442,7 @@
+         {
+             this.field_146297_k.field_71456_v.func_146158_b().func_146239_a(p_175281_1_);
+         }
++        if (net.minecraftforge.client.ClientCommandHandler.instance.func_71556_a(field_146297_k.field_71439_g, p_175281_1_) != 0) return;
+ 
+         this.field_146297_k.field_71439_g.func_71165_d(p_175281_1_);
+     }
+@@ -450,9 +457,15 @@
+ 
+                 if (guibutton.func_146116_c(this.field_146297_k, p_73864_1_, p_73864_2_))
+                 {
++                    net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre event = new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Pre(this, guibutton, this.field_146292_n);
++                    if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event))
++                        break;
++                    guibutton = event.button;
+                     this.field_146290_a = guibutton;
+                     guibutton.func_146113_a(this.field_146297_k.func_147118_V());
+                     this.func_146284_a(guibutton);
++                    if (this.equals(this.field_146297_k.field_71462_r))
++                        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.ActionPerformedEvent.Post(this, event.button, this.field_146292_n));
+                 }
+             }
+         }
+@@ -482,8 +495,12 @@
+         this.field_146289_q = p_146280_1_.field_71466_p;
+         this.field_146294_l = p_146280_2_;
+         this.field_146295_m = p_146280_3_;
++        if (!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent.Pre(this, this.field_146292_n)))
++        {
+         this.field_146292_n.clear();
+         this.func_73866_w_();
++        }
++        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.InitGuiEvent.Post(this, this.field_146292_n));
+     }
+ 
+     public void func_73866_w_()
+@@ -496,7 +513,9 @@
+         {
+             while (Mouse.next())
+             {
++                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent.Pre(this))) continue;
+                 this.func_146274_d();
++                if (this.equals(this.field_146297_k.field_71462_r)) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.MouseInputEvent.Post(this));
+             }
+         }
+ 
+@@ -504,7 +523,9 @@
+         {
+             while (Keyboard.next())
+             {
++                if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent.Pre(this))) continue;
+                 this.func_146282_l();
++                if (this.equals(this.field_146297_k.field_71462_r)) net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.GuiScreenEvent.KeyboardInputEvent.Post(this));
+             }
+         }
+     }

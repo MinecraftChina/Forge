@@ -1,0 +1,126 @@
+--- ../src-base/minecraft/net/minecraft/block/BlockLeaves.java
++++ ../src-work/minecraft/net/minecraft/block/BlockLeaves.java
+@@ -18,7 +18,7 @@
+ import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.fml.relauncher.SideOnly;
+ 
+-public abstract class BlockLeaves extends BlockLeavesBase
++public abstract class BlockLeaves extends BlockLeavesBase implements net.minecraftforge.common.IShearable
+ {
+     public static final PropertyBool field_176237_a = PropertyBool.func_177716_a("decayable");
+     public static final PropertyBool field_176236_b = PropertyBool.func_177716_a("check_decay");
+@@ -75,9 +75,9 @@
+                         BlockPos blockpos = p_180663_2_.func_177982_a(j1, k1, l1);
+                         IBlockState iblockstate = p_180663_1_.func_180495_p(blockpos);
+ 
+-                        if (iblockstate.func_177230_c().func_149688_o() == Material.field_151584_j && !((Boolean)iblockstate.func_177229_b(field_176236_b)).booleanValue())
++                        if (iblockstate.func_177230_c().isLeaves(p_180663_1_, blockpos))
+                         {
+-                            p_180663_1_.func_180501_a(blockpos, iblockstate.func_177226_a(field_176236_b, Boolean.valueOf(true)), 4);
++                            iblockstate.func_177230_c().beginLeavesDecay(p_180663_1_, blockpos);
+                         }
+                     }
+                 }
+@@ -117,9 +117,9 @@
+                             {
+                                 Block block = p_180650_1_.func_180495_p(blockpos$mutableblockpos.func_181079_c(k + i2, l + j2, i1 + k2)).func_177230_c();
+ 
+-                                if (block != Blocks.field_150364_r && block != Blocks.field_150363_s)
++                                if (!block.canSustainLeaves(p_180650_1_, blockpos$mutableblockpos.func_181079_c(k + i2, l + j2, i1 + k2)))
+                                 {
+-                                    if (block.func_149688_o() == Material.field_151584_j)
++                                    if (block.isLeaves(p_180650_1_, blockpos$mutableblockpos.func_181079_c(k + i2, l + j2, i1 + k2)))
+                                     {
+                                         this.field_150128_a[(i2 + l1) * k1 + (j2 + l1) * j1 + k2 + l1] = -2;
+                                     }
+@@ -226,40 +226,7 @@
+ 
+     public void func_180653_a(World p_180653_1_, BlockPos p_180653_2_, IBlockState p_180653_3_, float p_180653_4_, int p_180653_5_)
+     {
+-        if (!p_180653_1_.field_72995_K)
+-        {
+-            int i = this.func_176232_d(p_180653_3_);
+-
+-            if (p_180653_5_ > 0)
+-            {
+-                i -= 2 << p_180653_5_;
+-
+-                if (i < 10)
+-                {
+-                    i = 10;
+-                }
+-            }
+-
+-            if (p_180653_1_.field_73012_v.nextInt(i) == 0)
+-            {
+-                Item item = this.func_180660_a(p_180653_3_, p_180653_1_.field_73012_v, p_180653_5_);
+-                func_180635_a(p_180653_1_, p_180653_2_, new ItemStack(item, 1, this.func_180651_a(p_180653_3_)));
+-            }
+-
+-            i = 200;
+-
+-            if (p_180653_5_ > 0)
+-            {
+-                i -= 10 << p_180653_5_;
+-
+-                if (i < 40)
+-                {
+-                    i = 40;
+-                }
+-            }
+-
+-            this.func_176234_a(p_180653_1_, p_180653_2_, p_180653_3_, i);
+-        }
++        super.func_180653_a(p_180653_1_, p_180653_2_, p_180653_3_, p_180653_4_, p_180653_5_);
+     }
+ 
+     protected void func_176234_a(World p_176234_1_, BlockPos p_176234_2_, IBlockState p_176234_3_, int p_176234_4_)
+@@ -296,4 +263,48 @@
+     }
+ 
+     public abstract BlockPlanks.EnumType func_176233_b(int p_176233_1_);
++
++    @Override public boolean isShearable(ItemStack item, IBlockAccess world, BlockPos pos){ return true; }
++    @Override public boolean isLeaves(IBlockAccess world, BlockPos pos){ return true; }
++
++    @Override
++    public void beginLeavesDecay(World world, BlockPos pos)
++    {
++        IBlockState state = world.func_180495_p(pos);
++        if (!(Boolean)state.func_177229_b(field_176236_b))
++        {
++            world.func_180501_a(pos, state.func_177226_a(field_176236_b, true), 4);
++        }
++    }
++
++    @Override
++    public java.util.List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
++    {
++        java.util.List<ItemStack> ret = new java.util.ArrayList<ItemStack>();
++        Random rand = world instanceof World ? ((World)world).field_73012_v : new Random();
++        int chance = this.func_176232_d(state);
++
++        if (fortune > 0)
++        {
++            chance -= 2 << fortune;
++            if (chance < 10) chance = 10;
++        }
++
++        if (rand.nextInt(chance) == 0)
++            ret.add(new ItemStack(func_180660_a(state, rand, fortune), 1, func_180651_a(state)));
++
++        chance = 200;
++        if (fortune > 0)
++        {
++            chance -= 10 << fortune;
++            if (chance < 40) chance = 40;
++        }
++
++        this.captureDrops(true);
++        if (world instanceof World)
++            this.func_176234_a((World)world, pos, state, chance); // Dammet mojang
++        ret.addAll(this.captureDrops(false));
++        return ret;
++    }
++
+ }

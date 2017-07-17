@@ -1,0 +1,93 @@
+--- ../src-base/minecraft/net/minecraft/server/dedicated/DedicatedServer.java
++++ ../src-work/minecraft/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -1,6 +1,9 @@
+ package net.minecraft.server.dedicated;
+ 
+ import com.google.common.collect.Lists;
++import java.io.FileDescriptor;
++import java.io.FileOutputStream;
++import java.io.PrintStream;
+ import java.io.BufferedReader;
+ import java.io.File;
+ import java.io.IOException;
+@@ -25,6 +28,7 @@
+ import net.minecraft.server.ServerEula;
+ import net.minecraft.server.gui.MinecraftServerGui;
+ import net.minecraft.server.management.PreYggdrasilConverter;
++import net.minecraft.util.IChatComponent;
+ import net.minecraft.util.BlockPos;
+ import net.minecraft.util.CryptManager;
+ import net.minecraft.util.MathHelper;
+@@ -49,7 +53,10 @@
+     private boolean field_71338_p;
+     private WorldSettings.GameType field_71337_q;
+     private boolean field_71335_s;
++    public static boolean allowPlayerLogins = false;
+ 
++	private PrintStream stderr = new PrintStream(new FileOutputStream(FileDescriptor.err));
++
+     public DedicatedServer(File p_i1508_1_)
+     {
+         super(p_i1508_1_, Proxy.NO_PROXY, field_152367_a);
+@@ -82,6 +89,7 @@
+         {
+             public void run()
+             {
++                if (net.minecraftforge.server.console.TerminalHandler.handleCommands(DedicatedServer.this)) return;
+                 BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(System.in));
+                 String s4;
+ 
+@@ -107,6 +115,8 @@
+             field_155771_h.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+         }
+ 
++        net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStart(this);
++
+         field_155771_h.info("Loading properties");
+         this.field_71340_o = new PropertyManager(new File("server.properties"));
+         this.field_154332_n = new ServerEula(new File("eula.txt"));
+@@ -198,6 +208,7 @@
+             }
+             else
+             {
++                net.minecraftforge.fml.common.FMLCommonHandler.instance().onServerStarted();
+                 this.func_152361_a(new DedicatedPlayerList(this));
+                 long j = System.nanoTime();
+ 
+@@ -244,6 +255,7 @@
+                 this.func_71191_d((this.func_71207_Z() + 8) / 16 * 16);
+                 this.func_71191_d(MathHelper.func_76125_a(this.func_71207_Z(), 64, 256));
+                 this.field_71340_o.func_73667_a("max-build-height", Integer.valueOf(this.func_71207_Z()));
++                if (!net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerAboutToStart(this)) return false;
+                 field_155771_h.info("Preparing level \"" + this.func_71270_I() + "\"");
+                 this.func_71247_a(this.func_71270_I(), this.func_71270_I(), k, worldtype, s2);
+                 long i1 = System.nanoTime() - j;
+@@ -272,7 +284,7 @@
+                     thread1.start();
+                 }
+ 
+-                return true;
++                return net.minecraftforge.fml.common.FMLCommonHandler.instance().handleServerStarting(this);
+             }
+         }
+     }
+@@ -370,11 +382,19 @@
+     {
+         while (!this.field_71341_l.isEmpty())
+         {
++			stderr.println("+^");
+             ServerCommand servercommand = (ServerCommand)this.field_71341_l.remove(0);
+             this.func_71187_D().func_71556_a(servercommand.field_73701_b, servercommand.field_73702_a);
++			stderr.println("+$");
+         }
+     }
+ 
++    public void func_145747_a(IChatComponent message)
++    {
++        field_155771_h.info(message.func_150260_c());
++        stderr.println(message.func_150260_c());
++    }
++
+     public boolean func_71262_S()
+     {
+         return true;

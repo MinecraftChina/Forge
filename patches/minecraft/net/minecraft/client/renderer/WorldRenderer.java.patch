@@ -1,0 +1,14 @@
+--- ../src-base/minecraft/net/minecraft/client/renderer/WorldRenderer.java
++++ ../src-work/minecraft/net/minecraft/client/renderer/WorldRenderer.java
+@@ -578,6 +578,11 @@
+         }
+     }
+ 
++    public void checkAndGrow()
++    {
++        this.func_181670_b(field_179011_q.func_177338_f()/* / 4 * 4 */);
++    }
++
+     @SideOnly(Side.CLIENT)
+     public class State
+     {
