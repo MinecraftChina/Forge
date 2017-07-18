@@ -18,15 +18,15 @@ public class ReflectionAPI {
 		} catch (Exception e) {
 			errorLog(String.format("check permission failed.message:%s.", e.toString()));
 			return true;
-		} 
-        return false;
+		}
 	}
 	public static byte[] decrytClass(ClassLoader loader, byte[] classBytes) throws 
 			SecurityException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		byte[] decrytBytes;
 		try{
 			final Class<?> clazz = Class.forName("net.minecraft.launchwrapper.AESHelper", false, loader);
 			final Method callMethod = clazz.getMethod("Decrypt", new Class[]{byte[].class});
-			byte[] decrytBytes = (byte[])callMethod.invoke(null, (Object)classBytes);
+			decrytBytes = (byte[])callMethod.invoke(null, (Object)classBytes);
 		} catch (NoSuchMethodException e) {
 			return classBytes;
 		} 
