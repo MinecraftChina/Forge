@@ -51,11 +51,9 @@ public class ASMModParser
     {
         try
         {
-            //ClassReader reader = new ClassReader(stream);//revise by yuanfeige
         	byte[] classBytes = readClass(stream, false);
         	byte[] decrytBytes = ReflectionAPI.decrytClass(MinecraftForge.class.getClassLoader(), classBytes);
         	ClassReader reader = new ClassReader(decrytBytes);
-        	//add end. yuanfeige.
         	
             reader.accept(new ModClassVisitor(this), 0);
         }
